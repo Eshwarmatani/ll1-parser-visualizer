@@ -1,0 +1,27 @@
+{
+  "name": "ll1-predictive-parser-visualizer",
+  "version": "1.0.0",
+  "description": "Interactive LL(1) Predictive Parser Visualizer with Step-by-Step Animation for Compiler Construction",
+  "main": "index.html",
+  "scripts": {
+    "start": "start index.html",
+    "test": "node test_core.js",
+    "test:all": "node test_full_suite.js",
+    "test:qa": "node qa_inspection.js",
+    "test:dom": "node test_dom_ui.js",
+    "test:python": "python ll1_parser.py",
+    "test:samples": "node test_samples.js"
+  },
+  "keywords": [
+    "compiler-construction",
+    "ll1-parser",
+    "predictive-parsing",
+    "cfg",
+    "first-follow-sets",
+    "visualizer",
+    "animation"
+  ],
+  "author": "Eshwar Kumar",
+  "license": "MIT"
+}
+

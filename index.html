@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LL(1) Predictive Parser Visualizer - Compiler Construction Final Project</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/theme.css?v=2.3">
+    <link rel="stylesheet" href="css/layout.css?v=2.3">
+    <link rel="stylesheet" href="css/components.css?v=2.3">
+    <link rel="stylesheet" href="css/animations.css?v=2.3">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo-icon">LL</div>
+                <div class="sidebar-logo-text">LL(1) Visualizer</div>
+                <span class="sidebar-badge">v2.0</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Overview</div>
+                <a href="#dashboard" class="nav-item active" data-target="section-dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>1. Dashboard</span>
+                </a>
+
+                <div class="nav-section-title">Grammar &amp; Theory</div>
+                <a href="#editor" class="nav-item" data-target="section-editor">
+                    <span class="nav-icon">✏️</span>
+                    <span>2. Grammar Editor</span>
+                </a>
+                <a href="#transformation" class="nav-item" data-target="section-transformation">
+                    <span class="nav-icon">🔄</span>
+                    <span>3. Transformation</span>
+                </a>
+                <a href="#analysis" class="nav-item" data-target="section-analysis">
+                    <span class="nav-icon">🔍</span>
+                    <span>4. Grammar Analysis</span>
+                </a>
+                <a href="#first" class="nav-item" data-target="section-first">
+                    <span class="nav-icon">🎯</span>
+                    <span>5. FIRST Sets</span>
+                </a>
+                <a href="#follow" class="nav-item" data-target="section-follow">
+                    <span class="nav-icon">🧭</span>
+                    <span>6. FOLLOW Sets</span>
+                </a>
+                <a href="#table" class="nav-item" data-target="section-table">
+                    <span class="nav-icon">📋</span>
+                    <span>7. Parsing Table</span>
+                </a>
+
+                <div class="nav-section-title">Compiler Pipeline</div>
+                <a href="#lexer" class="nav-item" data-target="section-lexer">
+                    <span class="nav-icon">🔬</span>
+                    <span>8. Lexical Scanner</span>
+                </a>
+                <a href="#stack" class="nav-item" data-target="section-stack">
+                    <span class="nav-icon">⚡</span>
+                    <span>9. Stack Animation</span>
+                </a>
+                <a href="#results" class="nav-item" data-target="section-results">
+                    <span class="nav-icon">🌳</span>
+                    <span>10. Results &amp; Tree</span>
+                </a>
+
+                <div class="nav-section-title">Assessment &amp; Viva</div>
+                <a href="#quiz" class="nav-item" data-target="section-quiz">
+                    <span class="nav-icon">📝</span>
+                    <span>11. Practice &amp; Quiz</span>
+                </a>
+                <a href="#about" class="nav-item" data-target="section-about">
+                    <span class="nav-icon">🎓</span>
+                    <span>12. Viva &amp; Guide</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                Compiler Construction Final Project<br>
+                <strong>Interactive LL(1) Visualizer</strong>
+            </div>
+        </aside>
+
+        <!-- Mobile Sidebar Backdrop Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Sticky Top Header -->
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <button class="btn btn-icon mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                        <span class="icon">☰</span>
+                    </button>
+                    <h1 class="page-title">LL(1) Predictive Parser Visualizer</h1>
+                </div>
+                <div class="topbar-right">
+                    <button class="btn btn-secondary btn-sm" id="btn-start-tour" title="Interactive Step-by-Step Guided Tour">
+                        🚀 Guided Tour
+                    </button>
+                    <div class="export-dropdown" style="position: relative; display: inline-block;">
+                        <button class="btn btn-secondary btn-sm" id="btn-export-menu" title="Export parsing artifacts & reports">
+                            💾 Export
+                        </button>
+                        <div class="dropdown-menu hidden" id="export-dropdown-menu" style="position: absolute; right: 0; top: 100%; margin-top: 6px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 100; min-width: 210px; padding: 6px 0;">
+                            <button class="dropdown-item" id="btn-export-table-csv">📋 Export Table (CSV)</button>
+                            <button class="dropdown-item" id="btn-export-trace-csv">📜 Export Trace (CSV)</button>
+                            <button class="dropdown-item" id="btn-export-grammar-txt">📄 Export Grammar (TXT)</button>
+                            <button class="dropdown-item" id="btn-export-sets-json">📊 Export Sets (JSON)</button>
+                            <div style="border-top: 1px solid var(--border-color); margin: 4px 0;"></div>
+                            <button class="dropdown-item" id="btn-export-report-pdf">🖨️ Print / Save PDF Report</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="theme-toggle-btn" title="Toggle Theme">
+                        ☀️ Light Mode
+                    </button>
+                    <button class="btn btn-primary btn-sm" data-goto="section-stack">
+                        ⚡ Open Simulator
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-container">
+
+                <!-- SECTION 1: DASHBOARD -->
+                <section class="content-section" id="section-dashboard">
+                    <div class="section-header">
+                        <h2>Compiler Construction Dashboard</h2>
+                        <p>Professional developer suite and educational platform for Context-Free Grammar analysis, LL(1) predictive parsing, and animated compiler simulation.</p>
+                    </div>
+
+                    <!-- Developer Metrics Row -->
+                    <div class="grid-5" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div class="card" style="padding: 16px;">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">📊 Grammars Analyzed</div>
+                            <div style="font-size: 26px; font-weight: 800; color: var(--accent-blue); margin: 4px 0;" id="dashboard-stat-grammars">1</div>
+                            <div class="card-description" style="margin: 0; font-size: 12px;">Active &amp; saved grammars</div>
+                        </div>
+                        <div class="card" style="padding: 16px;">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">⚡ Parsing Operations</div>
+                            <div style="font-size: 26px; font-weight: 800; color: var(--accent-green); margin: 4px 0;" id="dashboard-stat-operations">49</div>
+                            <div class="card-description" style="margin: 0; font-size: 12px;">Push, pop, match micro-steps</div>
+                        </div>
+                        <div class="card" style="padding: 16px;">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">✅ Strings Accepted</div>
+                            <div style="font-size: 26px; font-weight: 800; color: #10b981; margin: 4px 0;" id="dashboard-stat-successes">1</div>
+                            <div class="card-description" style="margin: 0; font-size: 12px;">Deterministic derivations</div>
+                        </div>
+                        <div class="card" style="padding: 16px;">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">❌ Syntax Errors</div>
+                            <div style="font-size: 26px; font-weight: 800; color: var(--accent-red); margin: 4px 0;" id="dashboard-stat-failures">0</div>
+                            <div class="card-description" style="margin: 0; font-size: 12px;">Handled syntax mismatches</div>
+                        </div>
+                        <div class="card" style="padding: 16px;">
+                            <div class="card-title" style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">⚖️ LL(1) Validated</div>
+                            <div style="font-size: 26px; font-weight: 800; color: var(--accent-amber); margin: 4px 0;" id="dashboard-stat-ll1">1</div>
+                            <div class="card-description" style="margin: 0; font-size: 12px;">Conflict-free grammars</div>
+                        </div>
+                    </div>
+
+                    <!-- Active Grammar Quick Specs -->
+                    <div class="grid-4" style="margin-bottom: 24px;">
+                        <div class="card">
+                            <div class="card-title">📌 Start Symbol</div>
+                            <div style="font-size: 28px; font-weight: 800; color: var(--accent-blue);" id="grammar-start-symbol-badge">E</div>
+                            <div class="card-description" style="margin-bottom: 0;">Top-level grammar axiom</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">🔤 Non-Terminals</div>
+                            <div id="grammar-non-terminals-list" style="display: flex; flex-wrap: wrap; gap: 4px; min-height: 38px;"></div>
+                            <div class="card-description" style="margin-bottom: 0;">Derived grammar variables</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">🏷️ Terminals</div>
+                            <div id="grammar-terminals-list" style="display: flex; flex-wrap: wrap; gap: 4px; min-height: 38px;"></div>
+                            <div class="card-description" style="margin-bottom: 0;">Tokens &amp; lexical alphabet</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">⚖️ LL(1) Status</div>
+                            <div id="dashboard-ll1-badge"><span class="badge badge-accept" style="font-size: 14px;">LL(1) VALID</span></div>
+                            <div class="card-description" style="margin-bottom: 0;">Deterministic lookahead compatible</div>
+                        </div>
+                    </div>
+
+                    <!-- Workflow Steps Grid (All 12 Modules) -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title">🚀 Interactive Compiler Pipeline Modules</div>
+                        <p class="card-description">Quick access to compiler phases, diagnostics, algorithms, animations, and assessment tools.</p>
+                        <div class="grid-3">
+                            <button class="btn btn-secondary" data-goto="section-editor" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">✏️</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">1. Grammar Editor</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Context-Free Grammar rules &amp; presets</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-transformation" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">🔄</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">2. Transformation</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Eliminate left recursion &amp; left factor</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-first" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">🎯</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">3. FIRST Sets</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Step-by-step fixed-point stepper</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-follow" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">🧭</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">4. FOLLOW Sets</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Start symbol &amp; suffix propagation</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-table" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">📋</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">5. Parsing Table</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">M[A, a] matrix with Cell Inspector</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-lexer" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">🔬</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">6. Lexical Scanner</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Tokenization &amp; scanner pipeline</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-primary" data-goto="section-stack" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">⚡</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">7. Stack Simulator</div>
+                                    <div style="font-size: 12px; opacity: 0.9;">Push, pop, and live trace table</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-results" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">🌳</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">8. Parse Tree &amp; Trace</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Dynamic SVG syntax tree &amp; benchmarks</div>
+                                </div>
+                            </button>
+                            <button class="btn btn-secondary" data-goto="section-quiz" style="justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 20px;">📝</span>
+                                <div style="text-align: left;">
+                                    <div style="font-weight: 700;">9. Practice &amp; Quiz</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">18 verified assessment questions</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Grammar History -->
+                    <div class="card">
+                        <div class="card-title">📜 Recent Grammar History</div>
+                        <p class="card-description">Recently analyzed grammars saved locally for instant recall:</p>
+                        <div id="dashboard-recent-history-list" style="display: flex; flex-direction: column; gap: 8px;">
+                            <div class="text-muted" style="font-size: 13px;">No previous grammars saved yet.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 2: GRAMMAR EDITOR -->
+                <section class="content-section hidden" id="section-editor">
+                    <div class="section-header">
+                        <h2>Context-Free Grammar Editor</h2>
+                        <p>Define production rules using arrows (<code>-&gt;</code>, <code>::=</code>) and alternatives (<code>|</code>). Epsilon can be written as <code>ε</code>, <code>epsilon</code>, or empty.</p>
+                    </div>
+
+                    <div class="grid-2">
+                        <!-- Left Editor Column -->
+                        <div class="card">
+                            <div class="form-group">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+                                    <label class="form-label" for="sample-grammar-select" style="margin: 0;">Presets &amp; Templates:</label>
+                                    <div style="display: flex; gap: 4px;">
+                                        <button class="btn btn-secondary btn-sm insert-sym-btn" data-sym="ε" title="Insert epsilon">ε</button>
+                                        <button class="btn btn-secondary btn-sm insert-sym-btn" data-sym=" -> " title="Insert arrow">-&gt;</button>
+                                        <button class="btn btn-secondary btn-sm insert-sym-btn" data-sym=" | " title="Insert alternative">|</button>
+                                    </div>
+                                </div>
+                                <select class="form-control" id="sample-grammar-select">
+                                    <option value="expression" selected>1. Classic Arithmetic Expressions (LL(1))</option>
+                                    <option value="assignment">2. Simple Assignment Statements (LL(1))</option>
+                                    <option value="boolean">3. Boolean Logic Expressions (LL(1))</option>
+                                    <option value="factoring">4. Common Prefix / Left Factoring (Non-LL(1))</option>
+                                    <option value="left_recursion">5. Direct Left-Recursive Grammar (Non-LL(1))</option>
+                                    <option value="parentheses">6. Parentheses Nesting (LL(1))</option>
+                                </select>
+                            </div>
+
+                            <!-- Start Symbol Selector -->
+                            <div class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+                                <label class="form-label" for="grammar-start-symbol-select" style="margin: 0; white-space: nowrap;">Custom Start Symbol:</label>
+                                <select class="form-control" id="grammar-start-symbol-select" style="min-width: 90px; max-width: 140px; font-family: var(--font-mono); font-weight: 700; padding: 6px 12px;">
+                                    <option value="E" selected>E</option>
+                                    <option value="E'">E'</option>
+                                    <option value="T">T</option>
+                                    <option value="T'">T'</option>
+                                    <option value="F">F</option>
+                                </select>
+                                <span style="font-size: 12px; color: var(--text-muted);">(Defaults to first non-terminal)</span>
+                            </div>
+
+                            <!-- Editor with Line Numbers Gutter -->
+                            <div class="form-group">
+                                <label class="form-label" for="grammar-editor-input">Production Rules:</label>
+                                <div class="editor-container-wrapper" style="display: flex; flex-direction: row; align-items: stretch; position: relative; border: 1px solid var(--border-color); border-radius: var(--radius-md); background-color: var(--bg-input); min-height: 220px; overflow: hidden; box-sizing: border-box;">
+                                    <div class="line-numbers-gutter" id="editor-line-numbers" style="width: 44px; min-width: 44px; max-width: 44px; padding: 12px 6px; box-sizing: border-box; background-color: var(--bg-secondary); border-right: 1px solid var(--border-color); color: var(--text-muted); font-family: var(--font-mono); font-size: 13.5px; line-height: 1.6; text-align: right; user-select: none;">1<br>2<br>3<br>4<br>5</div>
+                                    <textarea class="grammar-editor-textarea" id="grammar-editor-input" spellcheck="false" style="flex: 1; min-height: 220px; box-sizing: border-box; padding: 12px 14px; background: transparent; border: none; outline: none; color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: vertical; white-space: pre;" placeholder="E -> T E'&#10;E' -> + T E' | ε&#10;T -> F T'&#10;T' -> * F T' | ε&#10;F -> ( E ) | id">E -> T E'
+E' -> + T E' | ε
+T -> F T'
+T' -> * F T' | ε
+F -> ( E ) | id</textarea>
+                                </div>
+                            </div>
+
+                            <div id="grammar-error-messages" class="hidden"></div>
+
+                            <!-- Editor Action Toolbar -->
+                            <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+                                <button class="btn btn-primary" id="btn-parse-grammar">
+                                    <span>⚙️</span> Parse &amp; Analyze
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-add-rule" title="Add a new production rule template">
+                                    ➕ Add Rule
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-remove-rule" title="Remove the last rule">
+                                    ➖ Remove Rule
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-reset-grammar">
+                                    <span>⟲</span> Reset Default
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-clear-grammar">
+                                    🗑️ Clear
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-import-file-btn">
+                                    📥 Import File
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-export-grammar-file-btn">
+                                    📤 Export TXT
+                                </button>
+                                <input type="file" id="grammar-file-input" accept=".txt,.json" class="hidden">
+                            </div>
+                        </div>
+
+                        <!-- Right Guidelines & Syntax Highlighting Preview -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <div class="card">
+                                <div class="card-title">✨ Live Syntax Highlighting Preview</div>
+                                <div class="syntax-preview-card" id="grammar-syntax-preview"></div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-title">📖 Grammar Formatting Rules</div>
+                                <ul style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; padding-left: 20px;">
+                                    <li><strong>Start Symbol:</strong> The Left-Hand Side (LHS) of the first rule is default, or select a custom symbol above.</li>
+                                    <li><strong>Non-Terminals:</strong> Any symbol appearing on the LHS (e.g. <code>E</code>, <code>E'</code>, <code>T</code>).</li>
+                                    <li><strong>Terminals:</strong> Symbols on the RHS that do not appear on any LHS (e.g. <code>id</code>, <code>+</code>, <code>*</code>, <code>(</code>, <code>)</code>).</li>
+                                    <li><strong>Multiple Alternatives:</strong> Separate options using the pipe operator <code>|</code>.</li>
+                                    <li><strong>Epsilon:</strong> Write as <code>ε</code>, <code>epsilon</code>, or leave empty.</li>
+                                    <li><strong>Whitespace:</strong> Separate multi-character tokens with spaces (e.g. <code>+ T E'</code>).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: GRAMMAR TRANSFORMATION (NEW MODULE) -->
+                <section class="content-section hidden" id="section-transformation">
+                    <div class="section-header">
+                        <h2>Context-Free Grammar Transformation</h2>
+                        <p>Eliminate direct and indirect Left Recursion and apply Left Factoring to convert non-LL(1) grammars into deterministic predictive form.</p>
+                    </div>
+
+                    <!-- Transformation Action Bar -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title">🛠️ Available Formal Transformations</div>
+                        <p class="card-description">Select a formal compiler transformation to execute algorithmically on the current grammar:</p>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" id="btn-transform-direct-lr">
+                                🔄 Eliminate Direct Left Recursion
+                            </button>
+                            <button class="btn btn-secondary" id="btn-transform-indirect-lr">
+                                🔁 Eliminate Indirect Left Recursion
+                            </button>
+                            <button class="btn btn-secondary" id="btn-transform-left-factor">
+                                ✂️ Apply Left Factoring (Common Prefixes)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transformation Diff Box: Original vs Transformed -->
+                    <div class="card" id="transformation-diff-card" style="margin-bottom: 24px;">
+                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                            <span class="card-title" style="margin: 0;">⚖️ Grammar Transformation Diff</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary btn-sm" id="btn-apply-transformation" disabled>
+                                    ⚡ Apply to Active Grammar
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-discard-transformation" disabled>
+                                    ❌ Discard
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="transform-diff-grid">
+                            <div>
+                                <div style="font-weight: 700; font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">ORIGINAL GRAMMAR:</div>
+                                <div class="transform-box" id="transform-original-preview"></div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 13px; color: var(--accent-blue); margin-bottom: 6px;">TRANSFORMED GRAMMAR:</div>
+                                <div class="transform-box" id="transform-result-preview" style="border-color: var(--accent-blue);"></div>
+                            </div>
+                        </div>
+
+                        <!-- LL(1) Compatibility Status Banner -->
+                        <div id="transformation-ll1-status" style="margin-top: 16px;"></div>
+                    </div>
+
+                    <!-- Step-by-Step Transformation Explanations -->
+                    <div class="card">
+                        <div class="card-title">📖 Mathematical Step-by-Step Reasoning</div>
+                        <div id="transformation-steps-container">
+                            <p class="text-muted" style="margin: 0;">Click one of the transformation buttons above to view step-by-step mathematical reductions.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: GRAMMAR ANALYSIS -->
+                <section class="content-section hidden" id="section-analysis">
+                    <div class="section-header">
+                        <h2>Grammar Diagnostic Analysis</h2>
+                        <p>Automatic detection of Left Recursion, Common Prefixes (Left Factoring), and LL(1) Table Ambiguities.</p>
+                    </div>
+
+                    <!-- Verdict Card -->
+                    <div id="analysis-ll1-verdict" class="verdict-card verdict-success" style="margin-bottom: 24px;">
+                        <div class="verdict-icon">✓</div>
+                        <div class="verdict-content">
+                            <h3>Grammar is LL(1) Compatible</h3>
+                            <p>No left recursion or parsing table conflicts detected.</p>
+                        </div>
+                    </div>
+
+                    <!-- Warnings & Remedies Container -->
+                    <div id="analysis-warnings-list"></div>
+                </section>
+
+                <!-- SECTION 4: FIRST SETS -->
+                <section class="content-section hidden" id="section-first">
+                    <div class="section-header">
+                        <h2>FIRST Set Calculations &amp; Stepper</h2>
+                        <p>For any grammar symbol \(X\), \(\text{FIRST}(X)\) is the set of terminals that begin strings derived from \(X\), plus \(\epsilon\) if \(X \Rightarrow^* \epsilon\).</p>
+                    </div>
+
+                    <!-- Step-by-Step Interactive Stepper Bar -->
+                    <div class="stepper-control-bar">
+                        <div class="stepper-controls-group">
+                            <button class="btn btn-primary btn-sm" id="btn-first-play">
+                                <span class="icon">▶</span> Play Stepper
+                            </button>
+                            <button class="btn btn-secondary btn-icon btn-sm" id="btn-first-prev" title="Previous Derivation Step">
+                                <span class="icon">⏮</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon btn-sm" id="btn-first-next" title="Next Derivation Step">
+                                <span class="icon">⏭</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon btn-sm" id="btn-first-reset" title="Reset Stepper to Start">
+                                <span class="icon">⟲</span>
+                            </button>
+                        </div>
+
+                        <div class="stepper-status-box">
+                            <span id="first-stepper-step-pill" class="stepper-step-pill">Step 1 of 1</span>
+                            <span id="first-stepper-iteration-badge" class="stepper-iteration-badge">Iteration 1</span>
+                        </div>
+                    </div>
+
+                    <!-- Active Production & Examined Symbol Card -->
+                    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent-blue);">
+                        <div class="card-title">🔍 Current Derivation Rule &amp; Symbol</div>
+                        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px;">
+                            <div>
+                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Active Production:</span>
+                                <div><code id="first-stepper-active-rule" style="font-size: 16px; font-weight: 700; color: var(--accent-blue);">—</code></div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Target Non-Terminal:</span>
+                                <div><strong id="first-stepper-target-nt" style="font-size: 16px; font-family: var(--font-mono); color: var(--accent-amber);">—</strong></div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Examined Symbol:</span>
+                                <div><span id="first-stepper-active-sym" class="examined-symbol-tag">—</span></div>
+                            </div>
+                        </div>
+                        <div id="first-stepper-explanation" style="font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            Use the stepper controls above to follow the algorithm step-by-step.
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title">🎯 Dynamically Updated FIRST Sets</div>
+                        <div class="grid-3" id="first-sets-grid"></div>
+                    </div>
+
+                    <!-- Iteration Convergence Summary -->
+                    <div class="card">
+                        <div class="card-title">🔄 Fixed-Point Iteration Convergence</div>
+                        <p class="card-description">Shows how sets grew across each loop iteration until no further changes occurred (Fixpoint reached):</p>
+                        <div class="table-scroll-wrapper" style="max-height: 280px; overflow-y: auto;">
+                            <div id="first-iterations-table"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 5: FOLLOW SETS -->
+                <section class="content-section hidden" id="section-follow">
+                    <div class="section-header">
+                        <h2>FOLLOW Set Calculations &amp; Stepper</h2>
+                        <p>For any non-terminal \(A\), \(\text{FOLLOW}(A)\) is the set of terminals that can appear immediately to the right of \(A\) in some sentential form, including \(\$\) for the start symbol.</p>
+                    </div>
+
+                    <!-- Step-by-Step Interactive Stepper Bar -->
+                    <div class="stepper-control-bar">
+                        <div class="stepper-controls-group">
+                            <button class="btn btn-primary btn-sm" id="btn-follow-play">
+                                <span class="icon">▶</span> Play Stepper
+                            </button>
+                            <button class="btn btn-secondary btn-icon btn-sm" id="btn-follow-prev" title="Previous Derivation Step">
+                                <span class="icon">⏮</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon btn-sm" id="btn-follow-next" title="Next Derivation Step">
+                                <span class="icon">⏭</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon btn-sm" id="btn-follow-reset" title="Reset Stepper to Start">
+                                <span class="icon">⟲</span>
+                            </button>
+                        </div>
+
+                        <div class="stepper-status-box">
+                            <span id="follow-stepper-step-pill" class="stepper-step-pill">Step 1 of 1</span>
+                            <span id="follow-stepper-iteration-badge" class="stepper-iteration-badge">Iteration 1</span>
+                        </div>
+                    </div>
+
+                    <!-- Active Production & Trigger Card -->
+                    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent-green);">
+                        <div class="card-title">🔍 Current Derivation Rule &amp; Trigger</div>
+                        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px;">
+                            <div>
+                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Active Production:</span>
+                                <div><code id="follow-stepper-active-rule" style="font-size: 16px; font-weight: 700; color: var(--accent-green);">—</code></div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Target Non-Terminal:</span>
+                                <div><strong id="follow-stepper-target-nt" style="font-size: 16px; font-family: var(--font-mono); color: var(--accent-amber);">—</strong></div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Trigger Rule:</span>
+                                <div><span id="follow-stepper-trigger-tag" class="examined-symbol-tag">—</span></div>
+                            </div>
+                        </div>
+                        <div id="follow-stepper-explanation" style="font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            Use the stepper controls above to follow the algorithm step-by-step.
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title">🧭 Dynamically Updated FOLLOW Sets</div>
+                        <div class="grid-3" id="follow-sets-grid"></div>
+                    </div>
+
+                    <!-- Iteration Convergence Summary -->
+                    <div class="card">
+                        <div class="card-title">🔄 Fixed-Point Iteration Convergence</div>
+                        <p class="card-description">Shows how sets grew across each loop iteration until no further changes occurred (Fixpoint reached):</p>
+                        <div class="table-scroll-wrapper" style="max-height: 280px; overflow-y: auto;">
+                            <div id="follow-iterations-table"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 6: PARSING TABLE -->
+                <section class="content-section hidden" id="section-table">
+                    <div class="section-header">
+                        <h2>LL(1) Predictive Parsing Table \(M[A, a]\)</h2>
+                        <p>Rows correspond to Non-Terminals, and Columns correspond to Terminals and the End-of-Input marker \(\$\).</p>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 20px; background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 13.5px; color: var(--text-primary);">
+                                💡 <strong>Interactive Inspector:</strong> Click any cell in the table below to open the <strong>Cell Inspector</strong> showing the mathematical FIRST/FOLLOW justification and insertion rule formula.
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="btn-export-table-csv-page">
+                                📋 Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll-wrapper" id="parsing-table-wrapper"></div>
+                </section>
+
+                <!-- SECTION 7: LEXICAL ANALYSIS (SCANNER MODULE) -->
+                <section class="content-section hidden" id="section-lexer">
+                    <div class="section-header">
+                        <h2>Lexical Analysis (Scanner Module)</h2>
+                        <p>Explore Phase 1 of the compiler front-end: converting a raw source code string into a stream of discrete typed tokens before syntax analysis.</p>
+                    </div>
+
+                    <div class="grid-2" style="margin-bottom: 24px;">
+                        <!-- Input Source Code Box -->
+                        <div class="card">
+                            <div class="card-title">📝 Source Code Input</div>
+                            <div class="form-group">
+                                <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+                                    <button class="btn btn-secondary btn-sm lexer-sample-btn" data-code="total = a + 25 * b">Sample: Arithmetic</button>
+                                    <button class="btn btn-secondary btn-sm lexer-sample-btn" data-code="id = id + num ;">Sample: Assignment</button>
+                                    <button class="btn btn-secondary btn-sm lexer-sample-btn" data-code="true and not false or true">Sample: Boolean</button>
+                                </div>
+                                <textarea class="form-control" id="lexer-input-code" style="font-family: var(--font-mono); font-size: 14px; min-height: 110px;" placeholder="e.g. total = a + 25 * b">total = a + 25 * b</textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                                <button class="btn btn-primary" id="btn-scan-tokens">
+                                    ⚡ Scan &amp; Tokenize
+                                </button>
+                                <button class="btn btn-secondary" id="btn-send-tokens-to-parser">
+                                    🚀 Send Tokens to LL(1) Parser
+                                </button>
+                            </div>
+
+                            <!-- Lexical Errors Container -->
+                            <div id="lexer-errors-container" class="hidden" style="margin-top: 14px;"></div>
+                        </div>
+
+                        <!-- Educational: Lexer vs Parser -->
+                        <div class="card">
+                            <div class="card-title">💡 Lexical vs Syntax Analysis</div>
+                            <ul style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; padding-left: 20px;">
+                                <li><strong>Lexical Analysis (Scanner):</strong> Reads characters, groups them into lexemes, strips whitespace/comments, and assigns token classes (Regular Language / Finite Automaton).</li>
+                                <li><strong>Syntax Analysis (Parser):</strong> Reads the stream of tokens and constructs a hierarchical parse tree according to CFG grammar rules (Context-Free Language / Pushdown Automaton).</li>
+                                <li><strong>Compiler Pipeline Bridge:</strong> Identifiers (<code>total</code>, <code>a</code>, <code>b</code>) map to terminal <code>id</code>; numbers map to terminal <code>num</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Token Stream & Token Table -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title">🎟️ Token Stream View</div>
+                        <p class="card-description">Discrete tokens generated by the scanner:</p>
+                        <div class="token-stream-container" id="lexer-tokens-stream"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📋 Detailed Symbol &amp; Token Table</div>
+                        <p class="card-description">Exact source coordinates and token mapping:</p>
+                        <div class="table-scroll-wrapper" style="max-height: 350px; overflow-y: auto;">
+                            <table class="token-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">Index</th>
+                                        <th>Token Type</th>
+                                        <th>Lexeme</th>
+                                        <th>Line</th>
+                                        <th>Columns</th>
+                                        <th>Mapped Parser Terminal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lexer-tokens-table-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 7: STACK ANIMATION (MOST IMPORTANT) -->
+                <section class="content-section hidden" id="section-stack">
+                    <div class="section-header">
+                        <h2>Interactive Stack Simulator &amp; Animation</h2>
+                        <p>Watch step-by-step PUSH, POP, Terminal Matching, Epsilon expansion, and Error detection with slow playback controls.</p>
+                    </div>
+
+                    <!-- Celebratory Acceptance Banner (Hidden until acceptance) -->
+                    <div id="parsing-success-banner" class="celebration-banner hidden">
+                        <div class="celebration-icon">🎉</div>
+                        <div class="celebration-content">
+                            <h3>STRING ACCEPTED!</h3>
+                            <p>The parser successfully consumed all tokens and both the stack TOP and lookahead token reached the end-of-input marker <code>$</code>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Horizontal Input Tape Visualizer -->
+                    <div class="input-tape-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">
+                                📼 Input Token Stream (Lookahead Tape)
+                            </span>
+                            <span style="font-size: 12px; color: var(--text-muted);">Current Lookahead Pointer</span>
+                        </div>
+                        <div class="tape-container" id="input-tape-tokens"></div>
+                    </div>
+
+                    <!-- Playback Controls Bar -->
+                    <div class="playback-bar">
+                        <div class="playback-controls-group">
+                            <button class="btn btn-primary" id="btn-play-pause">
+                                <span class="icon">▶</span> Play
+                            </button>
+                            <button class="btn btn-secondary btn-icon" id="btn-step-prev" title="Previous Step (Reversible Rollback)">
+                                <span class="icon">⏮</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon" id="btn-step-next" title="Next Step">
+                                <span class="icon">⏭</span>
+                            </button>
+                            <button class="btn btn-secondary btn-icon" id="btn-step-restart" title="Restart Simulation">
+                                <span class="icon">⟲</span>
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar & Step Counter with breathing room -->
+                        <div class="playback-progress-box">
+                            <div class="playback-progress-header">
+                                <span id="anim-step-number" class="playback-step-pill">Step 1 of 1</span>
+                                <span id="anim-action-badge" class="action-badge badge-expand">INITIAL</span>
+                            </div>
+                            <div class="playback-progress-track">
+                                <div id="anim-progress-bar" class="playback-progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Speed Controls (Slow default for classroom demonstration) -->
+                        <div class="speed-control-group">
+                            <span class="speed-label">Speed:</span>
+                            <div class="speed-presets-wrapper">
+                                <button class="btn btn-secondary btn-sm btn-speed-preset active" data-speed="slow">Slow</button>
+                                <button class="btn btn-secondary btn-sm btn-speed-preset" data-speed="normal">Normal</button>
+                                <button class="btn btn-secondary btn-sm btn-speed-preset" data-speed="fast">Fast</button>
+                            </div>
+                            <input type="range" class="speed-slider" id="anim-speed-slider" min="100" max="2500" value="1500" step="50" title="Custom Speed Slider">
+                            <span id="anim-speed-label" class="speed-value-pill">1500 ms</span>
+                        </div>
+                    </div>
+
+                    <!-- Simulator Grid: Stack on Left, Diagnostics on Right -->
+                    <div class="grid-stack-simulator">
+                        <!-- Left: Vertical Stack -->
+                        <div class="stack-visualizer-box" id="stack-visualizer-card">
+                            <div class="stack-vis-header">
+                                <span style="font-weight: 700; font-size: 14px;">📚 Parsing Stack</span>
+                                <span class="badge badge-nt" style="font-size: 11px;">Vertical LIFO</span>
+                            </div>
+                            <div class="stack-vis-body" id="visual-stack-items"></div>
+                        </div>
+
+                        <!-- Right: Action & Explanation Card -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <div class="card">
+                                <div class="card-title">🔍 Current Parsing State</div>
+                                <div class="grid-3" style="margin-bottom: 16px;">
+                                    <div style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Stack TOP</div>
+                                        <div id="anim-current-top" style="font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-amber);">E</div>
+                                    </div>
+                                    <div style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Lookahead Token</div>
+                                        <div id="anim-current-token" style="font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-blue);">id</div>
+                                    </div>
+                                    <div style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Selected Production</div>
+                                        <div id="anim-current-production" style="font-size: 15px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">E -&gt; T E'</div>
+                                    </div>
+                                </div>
+
+                                <div class="card-title">💡 Pedagogical Explanation</div>
+                                <div id="anim-action-explanation" style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); background-color: var(--bg-input); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                    Initialized parsing stack with bottom marker '$' and Start Symbol 'E'.
+                                </div>
+                            </div>
+
+                            <!-- Input String Box for Custom Testing -->
+                            <div class="card">
+                                <div class="card-title">🎯 Test an Input String</div>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" class="form-control" id="parser-input-string" value="id + id * id" style="font-family: var(--font-mono); font-size: 15px;" placeholder="e.g. id + id * id or ( id + id ) * id">
+                                    <button class="btn btn-primary" id="btn-parse-input-string">
+                                        ⚡ Parse &amp; Simulate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LIVE STEP-BY-STEP PARSING DERIVATION TABLE IN SECTION 7 -->
+                    <div class="card live-trace-card" id="section-stack-trace-card" style="margin-top: 24px;">
+                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                                    📋 Live Step-by-Step Parsing Table &amp; Derivation Trace
+                                </span>
+                                <span id="trace-current-step-chip" class="active-step-chip" title="Active Animation Step">
+                                    <span class="pulse-dot"></span>
+                                    <span id="trace-chip-text">Step 1 of 1 • INITIAL</span>
+                                </span>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <div class="view-toggle-pills" style="display: inline-flex; background: var(--bg-input); padding: 3px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                    <button class="btn btn-secondary btn-sm active" id="btn-view-trace-tab" style="padding: 4px 12px; font-size: 12px;">
+                                        📋 Trace Table
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" id="btn-view-matrix-tab" style="padding: 4px 12px; font-size: 12px;">
+                                        📊 LL(1) Table Matrix M[A, a]
+                                    </button>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
+                                    🎯 Focus Step
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="card-description" style="margin-bottom: 14px;">
+                            This table dynamically tracks every micro-step of the stack animation. The active row lights up with 
+                            <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong> and auto-scrolls to remain centered. 
+                            <strong>Click any row</strong> to instantly jump the animator forward or backward to that exact state!
+                        </p>
+
+                        <!-- View 1: Live Step-by-Step Trace Table -->
+                        <div class="table-scroll-wrapper" id="parsing-trace-table-container" style="max-height: 460px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <table class="trace-table" id="parsing-trace-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 140px; text-align: center;">Step / Status</th>
+                                        <th style="width: 22%;">Stack (Bottom → TOP)</th>
+                                        <th style="width: 20%;">Remaining Input Tape</th>
+                                        <th style="width: 17%;">Production Applied</th>
+                                        <th style="width: 15%;">Action Taken</th>
+                                        <th>Pedagogical Explanation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="parsing-trace-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- View 2: Live LL(1) Table Matrix M[A, a] with Active Cell Highlight -->
+                        <div id="section-stack-matrix-container" class="hidden" style="margin-top: 10px;">
+                            <div class="table-scroll-wrapper" style="max-height: 460px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <div id="section-stack-matrix-render"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 8: RESULTS, TRACE & PARSE TREE -->
+                <section class="content-section hidden" id="section-results">
+                    <div class="section-header">
+                        <h2>Parsing Trace &amp; Parse Tree Visualization</h2>
+                        <p>Inspect the complete deterministic parsing derivation table and the dynamic hierarchical SVG syntax tree.</p>
+                    </div>
+
+                    <!-- Results Summary Bar -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <span style="font-size: 13px; color: var(--text-muted);">Tested String: </span>
+                                <code id="results-input-echo" style="font-weight: 700; color: var(--text-primary); font-size: 15px;">id + id * id</code>
+                            </div>
+                            <div>
+                                <span style="font-size: 13px; color: var(--text-muted);">Total Operations: </span>
+                                <strong id="results-total-steps">18</strong>
+                            </div>
+                            <div>
+                                <span id="results-status-badge" class="badge badge-accepted" style="font-size: 13px; padding: 6px 14px;">ACCEPTED</span>
+                            </div>
+                        </div>
+                        <div id="results-verdict-msg" style="margin-top: 10px; font-size: 13.5px; color: var(--text-secondary);"></div>
+                    </div>
+
+                    <!-- Dynamic SVG Parse Tree -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                            <span class="card-title" style="margin: 0;">🌳 Interactive SVG Parse Tree</span>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn btn-secondary btn-sm" id="btn-export-svg-tree" title="Download the parse tree as a standalone SVG vector graphic">
+                                    📥 Export SVG
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btn-fit-tree" title="Center and fit tree in viewport">
+                                    🎯 Fit Screen
+                                </button>
+                            </div>
+                        </div>
+                        <p class="card-description">Zoom with scroll wheel or buttons. Drag to pan. Nodes highlight dynamically during animation.</p>
+                        <div class="parse-tree-box" id="parse-tree-container"></div>
+                    </div>
+
+                    <!-- Complete Parsing Trace Table in Section 8 -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                            <span class="card-title" style="margin: 0;">📋 Complete Parsing Derivation Table</span>
+                            <button class="btn btn-secondary btn-sm" data-goto="section-stack">
+                                ⚡ Open Live Stack Simulator
+                            </button>
+                        </div>
+                        <p class="card-description">Click any row below to immediately jump the animator to that exact parsing state!</p>
+                        <div class="table-scroll-wrapper" id="section8-trace-table-container" style="max-height: 460px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <table class="trace-table" id="section8-trace-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 140px; text-align: center;">Step / Status</th>
+                                        <th style="width: 22%;">Stack (Bottom → TOP)</th>
+                                        <th style="width: 20%;">Remaining Input</th>
+                                        <th style="width: 17%;">Production Applied</th>
+                                        <th style="width: 15%;">Action Taken</th>
+                                        <th>Pedagogical Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="section8-trace-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Built-in Test Cases Suite -->
+                    <div class="card" style="margin-top: 24px;">
+                        <div class="card-title">🧪 Built-in Benchmark Test Suite</div>
+                        <p class="card-description">Click any test case below to simulate and verify expected acceptance or rejection behavior.</p>
+                        <div class="grid-4" id="test-cases-cards-container"></div>
+                    </div>
+                </section>
+
+                <!-- SECTION 11: PRACTICE & ASSESSMENT (QUIZ MODULE) -->
+                <section class="content-section hidden" id="section-quiz">
+                    <div class="section-header">
+                        <h2>Practice &amp; Assessment (Compiler Exam)</h2>
+                        <p>Test your understanding of LL(1) grammars, FIRST/FOLLOW derivations, parsing tables, and stack operations with 18 algorithmically verified questions.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="quiz-header-bar">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span class="card-title" style="margin: 0;">📝 Assessment Engine</span>
+                                <div style="display: flex; gap: 6px;">
+                                    <button class="btn btn-secondary btn-sm quiz-filter-btn active" data-filter="all">All (18)</button>
+                                    <button class="btn btn-secondary btn-sm quiz-filter-btn" data-filter="beginner">Beginner</button>
+                                    <button class="btn btn-secondary btn-sm quiz-filter-btn" data-filter="intermediate">Intermediate</button>
+                                    <button class="btn btn-secondary btn-sm quiz-filter-btn" data-filter="advanced">Advanced</button>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span id="quiz-score-pill" class="quiz-score-pill">Score: 0 / 0</span>
+                                <button class="btn btn-secondary btn-sm" id="btn-quiz-restart" title="Restart with a new shuffled set">
+                                    ⟲ Restart Quiz
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div style="width: 100%; height: 6px; background-color: var(--bg-input); border-radius: 3px; overflow: hidden; margin-bottom: 20px;">
+                            <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-green)); transition: width 0.3s;"></div>
+                        </div>
+
+                        <!-- Active Question Container -->
+                        <div id="quiz-question-container">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="display: flex; gap: 8px;">
+                                    <span id="quiz-q-category" class="badge badge-nt">Category</span>
+                                    <span id="quiz-q-difficulty" class="badge badge-term">Beginner</span>
+                                </div>
+                                <span id="quiz-q-number" style="font-weight: 700; font-size: 13px; color: var(--text-muted);">Question 1 of 10</span>
+                            </div>
+
+                            <div id="quiz-q-grammar-box" class="card" style="background-color: var(--bg-input); margin-bottom: 14px; padding: 12px; display: none;">
+                                <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Grammar Context:</div>
+                                <pre id="quiz-q-grammar" style="margin: 0; font-family: var(--font-mono); font-size: 13.5px;"></pre>
+                            </div>
+
+                            <h3 id="quiz-q-text" style="font-size: 16px; margin-bottom: 16px; color: var(--text-primary); line-height: 1.5;">Question text goes here?</h3>
+
+                            <div class="quiz-options-grid" id="quiz-options-container"></div>
+
+                            <div id="quiz-feedback-box" class="hidden"></div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                                <button class="btn btn-secondary btn-sm" id="btn-quiz-prev">⏮ Previous</button>
+                                <button class="btn btn-primary btn-sm" id="btn-quiz-next">Next Question ⏭</button>
+                            </div>
+                        </div>
+
+                        <!-- Final Results Container (Hidden until complete) -->
+                        <div id="quiz-results-container" class="hidden" style="text-align: center; padding: 30px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 12px;" id="quiz-result-icon">🏆</div>
+                            <h2 id="quiz-result-title" style="margin-bottom: 8px;">Assessment Completed!</h2>
+                            <p id="quiz-result-score-text" style="font-size: 18px; font-weight: 700; color: var(--accent-blue); margin-bottom: 16px;">You scored 8 out of 10 (80%)</p>
+                            <p id="quiz-result-feedback" style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 24px; font-size: 14px;"></p>
+                            <button class="btn btn-primary" id="btn-quiz-retry">⟲ Try Again</button>
+
+                            <!-- Incorrect Questions Review List -->
+                            <div id="quiz-incorrect-review-box" class="hidden" style="text-align: left; margin-top: 28px;">
+                                <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--accent-red);">⚠️ Review Incorrect Answers</h3>
+                                <div id="quiz-incorrect-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 12: VIVA MODE & DOCUMENTATION GUIDE -->
+                <section class="content-section hidden" id="section-about">
+                    <div class="section-header">
+                        <h2>Compiler Construction Theory &amp; Viva Mode</h2>
+                        <p>Complete theoretical background, formal LL(1) definitions, and top oral examination (Viva) questions with verified model answers.</p>
+                    </div>
+
+                    <!-- Tab Switcher: Theory Documentation vs Viva Mode -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-primary btn-sm" id="btn-tab-theory-guide">
+                                📖 Core Compiler Theory Guide (11 Topics)
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btn-tab-viva-mode">
+                                🎓 Interactive Viva Examination Mode (15 Q&amp;A)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 1: CORE THEORY DOCUMENTATION -->
+                    <div id="view-theory-guide">
+                        <div class="grid-2">
+                            <div class="card">
+                                <div class="card-title">1. What is a Compiler?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    A compiler translates high-level source code into low-level target machine code or bytecode through sequential analysis and synthesis phases: Lexical Analysis, Syntax Analysis, Semantic Analysis, Intermediate Code Generation, Code Optimization, and Target Code Generation.
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">2. What is a Context-Free Grammar (CFG)?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    A 4-tuple \(G = (V, \Sigma, R, S)\) where \(V\) is a finite set of non-terminals, \(\Sigma\) is a finite set of terminals disjoint from \(V\), \(R\) is a finite relation of production rules \(A \to \alpha\) where \(A \in V\) and \(\alpha \in (V \cup \Sigma)^*\), and \(S \in V\) is the designated start symbol.
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">3. What is LL(1) Parsing?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    <strong>L</strong>: Left-to-right scan of the input token stream.<br>
+                                    <strong>L</strong>: Leftmost derivation constructed step-by-step.<br>
+                                    <strong>(1)</strong>: Exactly one token of lookahead used to deterministically decide which production rule to apply without backtracking.
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">4. What is Predictive Parsing?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    A non-recursive, table-driven top-down parsing technique that maintains an explicit parsing stack. Using the current top symbol and the lookahead token, it queries a 2D matrix \(M[A, a]\) to uniquely identify the correct production.
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">5. What is FIRST?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    For any string of symbols \(\alpha\), \(\text{FIRST}(\alpha)\) is the set of terminals that begin strings derived from \(\alpha\). If \(\alpha \Rightarrow^* \epsilon\), then \(\epsilon \in \text{FIRST}(\alpha)\).
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">6. What is FOLLOW?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    For any non-terminal \(A\), \(\text{FOLLOW}(A)\) is the set of terminals that can appear immediately to the right of \(A\) in some sentential form derived from start symbol \(S\). The end-of-input marker \(\$\) is always placed in \(\text{FOLLOW}(S)\).
+                                </p>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-title">7. What is a Parsing Table?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    A two-dimensional matrix \(M[A, a]\) where rows represent non-terminals \(A\) and columns represent terminals \(a\) (including \(\$\)). Each entry contains the unique production rule \(A \to \alpha\) to be expanded when the stack top is \(A\) and lookahead is \(a\).
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">8. How does a Predictive Parser Work?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    1. If stack top \(X\) is a terminal and matches lookahead \(a\), pop \(X\) and advance input.<br>
+                                    2. If \(X\) is a non-terminal, look up \(M[X, a]\). If entry is \(X \to Y_1 Y_2 \dots Y_k\), pop \(X\) and push \(Y_k \dots Y_1\) in reverse order.<br>
+                                    3. If \(M[X, a]\) is blank, report syntax error.<br>
+                                    4. If stack top and lookahead are both \(\$\), report ACCEPT.
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">9. What is Left Recursion?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    A grammar has left recursion if \(A \Rightarrow^+ A \alpha\). A top-down predictive parser attempting to expand \(A\) repeatedly without consuming input will enter an infinite loop. Must be eliminated before LL(1) parsing.
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">10. What is Left Factoring?</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    When two alternatives for \(A\) share a common prefix \(A \to \alpha \beta_1 \mid \alpha \beta_2\), lookahead cannot distinguish which alternative to pick. Left factoring rewrites it as \(A \to \alpha A'\) and \(A' \to \beta_1 \mid \beta_2\).
+                                </p>
+
+                                <div class="card-title" style="margin-top: 16px;">11. Advantages &amp; Limitations of LL(1)</div>
+                                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                                    <strong>Advantages:</strong> Deterministic \(O(n)\) time complexity, zero backtracking, intuitive stack operations, small memory footprint.<br>
+                                    <strong>Limitations:</strong> Cannot handle left-recursive or ambiguous grammars; only parses grammars where 1 lookahead token suffices (weaker class than LR/LALR).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 2: INTERACTIVE VIVA EXAMINATION MODE -->
+                    <div id="view-viva-mode" class="hidden">
+                        <div class="card" style="margin-bottom: 20px; background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.3);">
+                            <div style="font-size: 14px; color: var(--text-primary);">
+                                🎓 <strong>Teacher &amp; Examiner Viva Preparation:</strong> Click on any question below to reveal the formal answer, algorithm references, and demonstration tips.
+                            </div>
+                        </div>
+
+                        <div id="viva-questions-accordion">
+                            <div class="viva-card">
+                                <div class="viva-question-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
+                                    <span>Q1: Why is reverse-order pushing required on the parsing stack?</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="viva-answer-body hidden">
+                                    Because a stack is a LIFO (Last-In, First-Out) structure. To produce a <em>leftmost derivation</em>, the leftmost symbol \(Y_1\) of a production \(A \to Y_1 Y_2 \dots Y_k\) must reside at the TOP of the stack to be processed next. Therefore, symbols must be pushed in reverse: \(Y_k, Y_{k-1}, \dots, Y_1\).
+                                </div>
+                            </div>
+
+                            <div class="viva-card">
+                                <div class="viva-question-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
+                                    <span>Q2: Can an ambiguous grammar EVER be LL(1)? Why or why not?</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="viva-answer-body hidden">
+                                    <strong>No, absolutely never.</strong> An ambiguous grammar by definition possesses at least one string with two distinct leftmost derivation trees. This mathematically guarantees that at least one table cell \(M[A, a]\) will contain multiple competing productions (a conflict), violating the deterministic single-entry requirement of LL(1).
+                                </div>
+                            </div>
+
+                            <div class="viva-card">
+                                <div class="viva-question-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
+                                    <span>Q3: What causes a FIRST/FIRST conflict versus a FIRST/FOLLOW conflict?</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="viva-answer-body hidden">
+                                    <strong>FIRST/FIRST Conflict:</strong> Occurs when two distinct non-epsilon alternatives \(A \to \alpha\) and \(A \to \beta\) share an identical terminal in their FIRST sets (\(\text{FIRST}(\alpha) \cap \text{FIRST}(\beta) \neq \emptyset\)).<br>
+                                    <strong>FIRST/FOLLOW Conflict:</strong> Occurs when a non-terminal has an alternative deriving epsilon (\(A \to \epsilon\)) and another alternative \(A \to \alpha\) where \(\text{FIRST}(\alpha)\) overlaps with \(\text{FOLLOW}(A)\) (\(\text{FIRST}(\alpha) \cap \text{FOLLOW}(A) \neq \emptyset\)).
+                                </div>
+                            </div>
+
+                            <div class="viva-card">
+                                <div class="viva-question-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
+                                    <span>Q4: Why does the end-marker $ get added to FOLLOW(S)?</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="viva-answer-body hidden">
+                                    By convention and formal definition, the start symbol \(S\) derives the complete language program. When parsing concludes, the only symbol that can legally follow the entire string is the end-of-input delimiter \(\$\).
+                                </div>
+                            </div>
+
+                            <div class="viva-card">
+                                <div class="viva-question-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
+                                    <span>Q5: Does eliminating left recursion and left factoring guarantee the grammar becomes LL(1)?</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="viva-answer-body hidden">
+                                    <strong>No.</strong> While eliminating left recursion and left factoring are necessary preconditions for an LL(1) grammar, they are not sufficient. The resulting grammar may still have overlapping FIRST/FOLLOW sets or require greater lookahead (\(k > 1\)).
+                                </div>
+                            </div>
+
+                            <div class="viva-card">
+                                <div class="viva-question-header" onclick="this.nextElementSibling.classList.toggle('hidden');">
+                                    <span>Q6: How does the parser handle epsilon productions on the stack?</span>
+                                    <span>▼</span>
+                                </div>
+                                <div class="viva-answer-body hidden">
+                                    When \(A \to \epsilon\) is chosen from \(M[A, a]\), the non-terminal \(A\) is popped from the stack and nothing is pushed onto the stack. The lookahead pointer is NOT advanced; rather, the underlying symbol underneath \(A\) now becomes the new Stack TOP and is evaluated against the same lookahead token.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CELL INSPECTOR MODAL DIALOG -->
+                <div id="cell-inspector-modal" class="modal-backdrop hidden">
+                    <div class="modal-dialog">
+                        <div class="modal-header">
+                            <div class="modal-title" id="inspector-modal-title">🔍 Parsing Table Cell Inspector</div>
+                            <button class="modal-close-btn" id="btn-close-cell-inspector">&times;</button>
+                        </div>
+                        <div id="inspector-modal-body">
+                            <!-- Populated dynamically by UIController -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GUIDED TOUR MODAL DIALOG -->
+                <div id="guided-tour-modal" class="modal-backdrop hidden">
+                    <div class="modal-dialog" style="max-width: 520px;">
+                        <div class="modal-header">
+                            <div class="modal-title" id="tour-step-title">🚀 Welcome to LL(1) Visualizer</div>
+                            <button class="modal-close-btn" id="btn-close-tour">&times;</button>
+                        </div>
+                        <div id="tour-step-content" style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 20px;">
+                            <!-- Populated dynamically by tour engine -->
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span id="tour-step-counter" style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Step 1 of 8</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary btn-sm" id="btn-tour-prev">Previous</button>
+                                <button class="btn btn-primary btn-sm" id="btn-tour-next">Next Step ⏭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Application Scripts -->
+    <script src="js/grammar.js?v=2.3"></script>
+    <script src="js/first.js?v=2.3"></script>
+    <script src="js/follow.js?v=2.3"></script>
+    <script src="js/table.js?v=2.3"></script>
+    <script src="js/transform.js?v=2.3"></script>
+    <script src="js/lexer.js?v=2.3"></script>
+    <script src="js/quiz.js?v=2.3"></script>
+    <script src="js/export.js?v=2.3"></script>
+    <script src="js/parser.js?v=2.3"></script>
+    <script src="js/animator.js?v=2.3"></script>
+    <script src="js/tree.js?v=2.3"></script>
+    <script src="js/sample-grammars.js?v=2.3"></script>
+    <script src="js/ui.js?v=2.3"></script>
+    <script src="js/app.js?v=2.3"></script>
+</body>
+</html>
+

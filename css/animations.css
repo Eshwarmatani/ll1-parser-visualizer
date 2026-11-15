@@ -1,0 +1,132 @@
+/**
+ * LL(1) Predictive Parser - Animation Keyframes & Visual FX
+ * Push/Pop slide transitions, match pulses, error shake, acceptance banners.
+ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Push animation for stack items */
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+        background-color: rgba(59, 130, 246, 0.4);
+    }
+    50% {
+        transform: translateY(2px) scale(1.02);
+        background-color: rgba(59, 130, 246, 0.25);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-push {
+    animation: slideInFromTop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Matching pulse glow on lookahead & stack */
+@keyframes matchPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.6);
+        border-color: var(--accent-green);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.animate-match {
+    animation: matchPulse 0.5s ease-out forwards;
+}
+
+/* Shake animation on syntax error */
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+.shake-error {
+    animation: errorShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: var(--accent-red) !important;
+}
+
+.animate-token-error {
+    border-color: var(--accent-red) !important;
+    background-color: var(--accent-red-bg) !important;
+    color: #ef4444 !important;
+    animation: errorShake 0.4s ease-in-out;
+}
+
+/* Pulse glow on tree nodes */
+@keyframes treeGlow {
+    0% {
+        stroke-width: 3;
+        filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.5));
+    }
+    50% {
+        stroke-width: 4.5;
+        filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9));
+    }
+    100% {
+        stroke-width: 3;
+        filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.5));
+    }
+}
+
+.pulse-glow {
+    animation: treeGlow 1.4s infinite ease-in-out;
+}
+
+/* Celebratory Acceptance Banner */
+.celebration-banner {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.15));
+    border: 1px solid var(--accent-green);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+    animation: fadeIn 0.4s ease;
+}
+
+.celebration-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.celebration-content h3 {
+    font-size: 18px;
+    color: #34d399;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.celebration-content p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+}
+
+.hidden {
+    display: none !important;
+}
+
