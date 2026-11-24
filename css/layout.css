@@ -215,9 +215,25 @@
 
 .grid-stack-simulator {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 24px;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
     align-items: start;
+}
+
+.grid-stepper-split {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.grid-stepper-split .grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+    gap: 10px !important;
+}
+
+.grid-stepper-split .set-display-card {
+    padding: 10px 12px !important;
 }
 
 /* Mobile Hamburger & Overlay */
@@ -249,7 +265,8 @@
 
 /* Mobile & Tablet Responsiveness */
 @media (max-width: 1024px) {
-    .grid-stack-simulator {
+    .grid-stack-simulator,
+    .grid-stepper-split {
         grid-template-columns: 1fr;
     }
     .grid-2 {

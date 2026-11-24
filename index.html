@@ -488,73 +488,78 @@ F -> ( E ) | id</textarea>
                         </div>
                     </div>
 
-                    <!-- Active Production & Examined Symbol Card -->
-                    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent-blue);">
-                        <div class="card-title">🔍 Current Derivation Rule &amp; Symbol</div>
-                        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px;">
-                            <div>
-                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Active Production:</span>
-                                <div><code id="first-stepper-active-rule" style="font-size: 16px; font-weight: 700; color: var(--accent-blue);">—</code></div>
+                    <!-- Side-by-Side Stepper & Live Table Grid -->
+                    <div class="grid-stepper-split" style="margin-bottom: 24px;">
+                        <!-- Left Column: Active Production & Set Cards -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Active Production & Examined Symbol Card -->
+                            <div class="card" style="margin: 0; border-left: 4px solid var(--accent-blue);">
+                                <div class="card-title">🔍 Current Derivation Rule &amp; Symbol</div>
+                                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
+                                    <div>
+                                        <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted);">Active Production:</span>
+                                        <div><code id="first-stepper-active-rule" style="font-size: 15px; font-weight: 700; color: var(--accent-blue);">—</code></div>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted);">Target:</span>
+                                        <div><strong id="first-stepper-target-nt" style="font-size: 15px; font-family: var(--font-mono); color: var(--accent-amber);">—</strong></div>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted);">Examined:</span>
+                                        <div><span id="first-stepper-active-sym" class="examined-symbol-tag" style="padding: 2px 6px; font-size: 12px;">—</span></div>
+                                    </div>
+                                </div>
+                                <div id="first-stepper-explanation" style="font-size: 13px; line-height: 1.5; color: var(--text-secondary); background: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                    Use the stepper controls above to follow the algorithm step-by-step.
+                                </div>
                             </div>
-                            <div>
-                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Target Non-Terminal:</span>
-                                <div><strong id="first-stepper-target-nt" style="font-size: 16px; font-family: var(--font-mono); color: var(--accent-amber);">—</strong></div>
-                            </div>
-                            <div>
-                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Examined Symbol:</span>
-                                <div><span id="first-stepper-active-sym" class="examined-symbol-tag">—</span></div>
-                            </div>
-                        </div>
-                        <div id="first-stepper-explanation" style="font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                            Use the stepper controls above to follow the algorithm step-by-step.
-                        </div>
-                    </div>
 
-                    <!-- Live Step-by-Step FIRST Derivation Table -->
-                    <div class="card live-trace-card" id="first-derivation-table-card" style="margin-bottom: 24px;">
-                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                                <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
-                                    📋 Live Step-by-Step FIRST Derivation Table
-                                </span>
-                                <span id="first-trace-chip" class="active-step-chip" title="Active Step">
-                                    <span class="pulse-dot"></span>
-                                    <span id="first-trace-chip-text">Step 1 of 8</span>
-                                </span>
-                            </div>
-                            <div>
-                                <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-first-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
-                                    🎯 Focus Step
-                                </button>
+                            <div class="card" style="margin: 0;">
+                                <div class="card-title">🎯 Dynamically Updated FIRST Sets</div>
+                                <div class="grid-3" id="first-sets-grid"></div>
                             </div>
                         </div>
-                        <p class="card-description" style="margin-bottom: 14px;">
-                            This table dynamically tracks every micro-step of the FIRST set algorithm. The active step lights up with 
-                            <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong> and auto-scrolls to remain centered. 
-                            <strong>Click any row</strong> to instantly jump the stepper forward or backward!
-                        </p>
-                        <div class="table-scroll-wrapper" id="first-trace-table-container" style="max-height: 340px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <table class="trace-table" id="first-derivation-trace-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 130px; text-align: center;">Step / Status</th>
-                                        <th style="width: 100px;">Iteration</th>
-                                        <th style="width: 120px;">Target Set</th>
-                                        <th style="width: 160px;">Production Rule</th>
-                                        <th style="width: 110px;">Symbol</th>
-                                        <th style="width: 140px;">Added to Set</th>
-                                        <th style="width: 200px;">Current FIRST(Target)</th>
-                                        <th>Pedagogical Rule &amp; Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="first-derivation-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
 
-                    <div class="card" style="margin-bottom: 24px;">
-                        <div class="card-title">🎯 Dynamically Updated FIRST Sets</div>
-                        <div class="grid-3" id="first-sets-grid"></div>
+                        <!-- Right Column: Live Step-by-Step FIRST Derivation Table -->
+                        <div class="card live-trace-card" id="first-derivation-table-card" style="margin: 0;">
+                            <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px;">
+                                        📋 Live Step-by-Step FIRST Derivation Table
+                                    </span>
+                                    <span id="first-trace-chip" class="active-step-chip" title="Active Step">
+                                        <span class="pulse-dot"></span>
+                                        <span id="first-trace-chip-text">Step 1 of 8</span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-first-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
+                                        🎯 Focus Step
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="card-description" style="margin-bottom: 12px;">
+                                Tracks every micro-step of the FIRST set algorithm in real-time. Active step highlights with 
+                                <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong>. Click any row to jump to that step!
+                            </p>
+                            <div class="table-scroll-wrapper" id="first-trace-table-container" style="max-height: 480px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <table class="trace-table" id="first-derivation-trace-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 120px; text-align: center;">Step / Status</th>
+                                            <th style="width: 75px;">Iter</th>
+                                            <th style="width: 105px;">Target</th>
+                                            <th style="width: 140px;">Production</th>
+                                            <th style="width: 85px;">Symbol</th>
+                                            <th style="width: 120px;">Added</th>
+                                            <th style="width: 160px;">FIRST(Target)</th>
+                                            <th>Rule &amp; Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="first-derivation-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Iteration Convergence Summary -->
@@ -597,72 +602,77 @@ F -> ( E ) | id</textarea>
                         </div>
                     </div>
 
-                    <!-- Active Production & Trigger Card -->
-                    <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--accent-green);">
-                        <div class="card-title">🔍 Current Derivation Rule &amp; Trigger</div>
-                        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px;">
-                            <div>
-                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Active Production:</span>
-                                <div><code id="follow-stepper-active-rule" style="font-size: 16px; font-weight: 700; color: var(--accent-green);">—</code></div>
+                    <!-- Side-by-Side Stepper & Live Table Grid -->
+                    <div class="grid-stepper-split" style="margin-bottom: 24px;">
+                        <!-- Left Column: Active Production & Set Cards -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Active Production & Trigger Card -->
+                            <div class="card" style="margin: 0; border-left: 4px solid var(--accent-green);">
+                                <div class="card-title">🔍 Current Derivation Rule &amp; Trigger</div>
+                                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
+                                    <div>
+                                        <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted);">Active Production:</span>
+                                        <div><code id="follow-stepper-active-rule" style="font-size: 15px; font-weight: 700; color: var(--accent-green);">—</code></div>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted);">Target:</span>
+                                        <div><strong id="follow-stepper-target-nt" style="font-size: 15px; font-family: var(--font-mono); color: var(--accent-amber);">—</strong></div>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted);">Trigger:</span>
+                                        <div><span id="follow-stepper-trigger-tag" class="examined-symbol-tag" style="padding: 2px 6px; font-size: 12px;">—</span></div>
+                                    </div>
+                                </div>
+                                <div id="follow-stepper-explanation" style="font-size: 13px; line-height: 1.5; color: var(--text-secondary); background: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                    Use the stepper controls above to follow the algorithm step-by-step.
+                                </div>
                             </div>
-                            <div>
-                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Target Non-Terminal:</span>
-                                <div><strong id="follow-stepper-target-nt" style="font-size: 16px; font-family: var(--font-mono); color: var(--accent-amber);">—</strong></div>
-                            </div>
-                            <div>
-                                <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Trigger Rule:</span>
-                                <div><span id="follow-stepper-trigger-tag" class="examined-symbol-tag">—</span></div>
-                            </div>
-                        </div>
-                        <div id="follow-stepper-explanation" style="font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                            Use the stepper controls above to follow the algorithm step-by-step.
-                        </div>
-                    </div>
 
-                    <!-- Live Step-by-Step FOLLOW Derivation Table -->
-                    <div class="card live-trace-card" id="follow-derivation-table-card" style="margin-bottom: 24px;">
-                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                                <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
-                                    📋 Live Step-by-Step FOLLOW Derivation Table
-                                </span>
-                                <span id="follow-trace-chip" class="active-step-chip" title="Active Step">
-                                    <span class="pulse-dot"></span>
-                                    <span id="follow-trace-chip-text">Step 1 of 12</span>
-                                </span>
-                            </div>
-                            <div>
-                                <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-follow-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
-                                    🎯 Focus Step
-                                </button>
+                            <div class="card" style="margin: 0;">
+                                <div class="card-title">🧭 Dynamically Updated FOLLOW Sets</div>
+                                <div class="grid-3" id="follow-sets-grid"></div>
                             </div>
                         </div>
-                        <p class="card-description" style="margin-bottom: 14px;">
-                            This table dynamically tracks every micro-step of the FOLLOW set algorithm. The active step lights up with 
-                            <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong> and auto-scrolls to remain centered. 
-                            <strong>Click any row</strong> to instantly jump the stepper forward or backward!
-                        </p>
-                        <div class="table-scroll-wrapper" id="follow-trace-table-container" style="max-height: 340px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <table class="trace-table" id="follow-derivation-trace-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 130px; text-align: center;">Step / Status</th>
-                                        <th style="width: 100px;">Iteration</th>
-                                        <th style="width: 120px;">Target Set</th>
-                                        <th style="width: 160px;">Production Rule</th>
-                                        <th style="width: 140px;">Added to Set</th>
-                                        <th style="width: 200px;">Current FOLLOW(Target)</th>
-                                        <th>Pedagogical Rule &amp; Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="follow-derivation-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
 
-                    <div class="card" style="margin-bottom: 24px;">
-                        <div class="card-title">🧭 Dynamically Updated FOLLOW Sets</div>
-                        <div class="grid-3" id="follow-sets-grid"></div>
+                        <!-- Right Column: Live Step-by-Step FOLLOW Derivation Table -->
+                        <div class="card live-trace-card" id="follow-derivation-table-card" style="margin: 0;">
+                            <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px;">
+                                        📋 Live Step-by-Step FOLLOW Derivation Table
+                                    </span>
+                                    <span id="follow-trace-chip" class="active-step-chip" title="Active Step">
+                                        <span class="pulse-dot"></span>
+                                        <span id="follow-trace-chip-text">Step 1 of 12</span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-follow-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
+                                        🎯 Focus Step
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="card-description" style="margin-bottom: 12px;">
+                                Tracks every micro-step of the FOLLOW set algorithm in real-time. Active step highlights with 
+                                <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong>. Click any row to jump to that step!
+                            </p>
+                            <div class="table-scroll-wrapper" id="follow-trace-table-container" style="max-height: 480px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <table class="trace-table" id="follow-derivation-trace-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 120px; text-align: center;">Step / Status</th>
+                                            <th style="width: 75px;">Iter</th>
+                                            <th style="width: 105px;">Target</th>
+                                            <th style="width: 150px;">Production</th>
+                                            <th style="width: 120px;">Added</th>
+                                            <th style="width: 160px;">FOLLOW(Target)</th>
+                                            <th>Rule &amp; Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="follow-derivation-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Iteration Convergence Summary -->
@@ -839,110 +849,105 @@ F -> ( E ) | id</textarea>
                         </div>
                     </div>
 
-                    <!-- Simulator Grid: Stack on Left, Diagnostics on Right -->
+                    <!-- Simulator Grid: Stack on Left, Live Table on Right SIDE-BY-SIDE -->
                     <div class="grid-stack-simulator">
-                        <!-- Left: Vertical Stack -->
-                        <div class="stack-visualizer-box" id="stack-visualizer-card">
-                            <div class="stack-vis-header">
-                                <span style="font-weight: 700; font-size: 14px;">📚 Parsing Stack</span>
-                                <span class="badge badge-nt" style="font-size: 11px;">Vertical LIFO</span>
-                            </div>
-                            <div class="stack-vis-body" id="visual-stack-items"></div>
-                        </div>
-
-                        <!-- Right: Action & Explanation Card -->
-                        <div style="display: flex; flex-direction: column; gap: 20px;">
-                            <div class="card">
-                                <div class="card-title">🔍 Current Parsing State</div>
-                                <div class="grid-3" style="margin-bottom: 16px;">
-                                    <div style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Stack TOP</div>
-                                        <div id="anim-current-top" style="font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-amber);">E</div>
-                                    </div>
-                                    <div style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Lookahead Token</div>
-                                        <div id="anim-current-token" style="font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-blue);">id</div>
-                                    </div>
-                                    <div style="background-color: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Selected Production</div>
-                                        <div id="anim-current-production" style="font-size: 15px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">E -&gt; T E'</div>
-                                    </div>
+                        <!-- Left: Vertical Stack & Input Tester -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="stack-visualizer-box" id="stack-visualizer-card" style="margin: 0;">
+                                <div class="stack-vis-header">
+                                    <span style="font-weight: 700; font-size: 14px;">📚 Parsing Stack</span>
+                                    <span class="badge badge-nt" style="font-size: 11px;">Vertical LIFO</span>
                                 </div>
-
-                                <div class="card-title">💡 Pedagogical Explanation</div>
-                                <div id="anim-action-explanation" style="font-size: 14px; line-height: 1.6; color: var(--text-secondary); background-color: var(--bg-input); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                    Initialized parsing stack with bottom marker '$' and Start Symbol 'E'.
-                                </div>
+                                <div class="stack-vis-body" id="visual-stack-items"></div>
                             </div>
 
                             <!-- Input String Box for Custom Testing -->
-                            <div class="card">
+                            <div class="card" style="margin: 0;">
                                 <div class="card-title">🎯 Test an Input String</div>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" class="form-control" id="parser-input-string" value="id + id * id" style="font-family: var(--font-mono); font-size: 15px;" placeholder="e.g. id + id * id or ( id + id ) * id">
-                                    <button class="btn btn-primary" id="btn-parse-input-string">
+                                <div style="display: flex; gap: 8px; flex-direction: column;">
+                                    <input type="text" class="form-control" id="parser-input-string" value="id + id * id" style="font-family: var(--font-mono); font-size: 14px;" placeholder="e.g. id + id * id">
+                                    <button class="btn btn-primary btn-sm" id="btn-parse-input-string" style="width: 100%;">
                                         ⚡ Parse &amp; Simulate
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- LIVE STEP-BY-STEP PARSING DERIVATION TABLE IN SECTION 7 -->
-                    <div class="card live-trace-card" id="section-stack-trace-card" style="margin-top: 24px;">
-                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                                <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
-                                    📋 Live Step-by-Step Parsing Table &amp; Derivation Trace
-                                </span>
-                                <span id="trace-current-step-chip" class="active-step-chip" title="Active Animation Step">
-                                    <span class="pulse-dot"></span>
-                                    <span id="trace-chip-text">Step 1 of 1 • INITIAL</span>
-                                </span>
-                            </div>
-
-                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                <div class="view-toggle-pills" style="display: inline-flex; background: var(--bg-input); padding: 3px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                                    <button class="btn btn-secondary btn-sm active" id="btn-view-trace-tab" style="padding: 4px 12px; font-size: 12px;">
-                                        📋 Trace Table
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" id="btn-view-matrix-tab" style="padding: 4px 12px; font-size: 12px;">
-                                        📊 LL(1) Table Matrix M[A, a]
-                                    </button>
+                        <!-- Right: Current Parsing State & LIVE Parsing Table SIDE-BY-SIDE -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="card" style="margin: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                                    <span class="card-title" style="margin: 0;">🔍 Current Parsing State</span>
+                                    <span id="trace-current-step-chip" class="active-step-chip" title="Active Animation Step">
+                                        <span class="pulse-dot"></span>
+                                        <span id="trace-chip-text">Step 1 of 1 • INITIAL</span>
+                                    </span>
                                 </div>
-                                <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
-                                    🎯 Focus Step
-                                </button>
+                                <div class="grid-3" style="margin-bottom: 12px;">
+                                    <div style="background-color: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Stack TOP</div>
+                                        <div id="anim-current-top" style="font-size: 18px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-amber);">E</div>
+                                    </div>
+                                    <div style="background-color: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Lookahead Token</div>
+                                        <div id="anim-current-token" style="font-size: 18px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-blue);">id</div>
+                                    </div>
+                                    <div style="background-color: var(--bg-input); padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                        <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Selected Production</div>
+                                        <div id="anim-current-production" style="font-size: 14px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">E -&gt; T E'</div>
+                                    </div>
+                                </div>
+
+                                <div id="anim-action-explanation" style="font-size: 13.5px; line-height: 1.5; color: var(--text-secondary); background-color: var(--bg-input); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                    Initialized parsing stack with bottom marker '$' and Start Symbol 'E'.
+                                </div>
                             </div>
-                        </div>
 
-                        <p class="card-description" style="margin-bottom: 14px;">
-                            This table dynamically tracks every micro-step of the stack animation. The active row lights up with 
-                            <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong> and auto-scrolls to remain centered. 
-                            <strong>Click any row</strong> to instantly jump the animator forward or backward to that exact state!
-                        </p>
+                            <!-- LIVE STEP-BY-STEP PARSING DERIVATION TABLE (SIDE-BY-SIDE!) -->
+                            <div class="card live-trace-card" id="section-stack-trace-card" style="margin: 0;">
+                                <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                                    <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px;">
+                                        📋 Live Parsing Trace Table
+                                    </span>
 
-                        <!-- View 1: Live Step-by-Step Trace Table -->
-                        <div class="table-scroll-wrapper" id="parsing-trace-table-container" style="max-height: 460px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <table class="trace-table" id="parsing-trace-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 140px; text-align: center;">Step / Status</th>
-                                        <th style="width: 22%;">Stack (Bottom → TOP)</th>
-                                        <th style="width: 20%;">Remaining Input Tape</th>
-                                        <th style="width: 17%;">Production Applied</th>
-                                        <th style="width: 15%;">Action Taken</th>
-                                        <th>Pedagogical Explanation</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="parsing-trace-tbody"></tbody>
-                            </table>
-                        </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <div class="view-toggle-pills" style="display: inline-flex; background: var(--bg-input); padding: 2px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                            <button class="btn btn-secondary btn-sm active" id="btn-view-trace-tab" style="padding: 3px 10px; font-size: 11.5px;">
+                                                📋 Trace Table
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm" id="btn-view-matrix-tab" style="padding: 3px 10px; font-size: 11.5px;">
+                                                📊 Table Matrix M[A, a]
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-step" title="Center table on the active step" style="padding: 3px 10px; font-size: 11.5px;">
+                                            🎯 Focus Step
+                                        </button>
+                                    </div>
+                                </div>
 
-                        <!-- View 2: Live LL(1) Table Matrix M[A, a] with Active Cell Highlight -->
-                        <div id="section-stack-matrix-container" class="hidden" style="margin-top: 10px;">
-                            <div class="table-scroll-wrapper" style="max-height: 460px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                                <div id="section-stack-matrix-render"></div>
+                                <!-- View 1: Live Step-by-Step Trace Table -->
+                                <div class="table-scroll-wrapper" id="parsing-trace-table-container" style="max-height: 420px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                    <table class="trace-table" id="parsing-trace-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 125px; text-align: center;">Step / Status</th>
+                                                <th style="width: 20%;">Stack (Bottom → TOP)</th>
+                                                <th style="width: 18%;">Remaining Tape</th>
+                                                <th style="width: 16%;">Production</th>
+                                                <th style="width: 14%;">Action</th>
+                                                <th>Explanation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="parsing-trace-tbody"></tbody>
+                                    </table>
+                                </div>
+
+                                <!-- View 2: Live LL(1) Table Matrix M[A, a] with Active Cell Highlight -->
+                                <div id="section-stack-matrix-container" class="hidden" style="margin-top: 8px;">
+                                    <div class="table-scroll-wrapper" style="max-height: 420px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                        <div id="section-stack-matrix-render"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
