@@ -755,6 +755,13 @@ class UIController {
                 this.renderFirstStepperStep(0);
             });
         }
+
+        const btnScrollFirst = document.getElementById('btn-scroll-to-current-first-step');
+        if (btnScrollFirst) {
+            btnScrollFirst.addEventListener('click', () => {
+                this.highlightFirstDerivationTableRow(this.firstStepperIndex);
+            });
+        }
     }
 
     startFirstStepperPlay() {
@@ -817,7 +824,7 @@ class UIController {
                     </div>
                     <div class="set-symbols-chips">
                         ${syms.map(s => {
-                            const isNewlyAdded = isTarget && step.newSymbols && step.newSymbols.includes(s);
+                            const isNewlyAdded = isTarget && ((step.added && step.added.includes(s)) || (step.newSymbols && step.newSymbols.includes(s)));
                             return `<span class="badge ${s === 'ε' ? 'badge-eps' : 'badge-term'} ${isNewlyAdded ? 'badge-newly-added' : ''}">${this.escapeHtml(s)}</span>`;
                         }).join('') || '<span class="text-muted">∅</span>'}
                     </div>
@@ -825,6 +832,9 @@ class UIController {
                 grid.appendChild(card);
             }
         }
+
+        // Highlight active step in FIRST derivation table
+        this.highlightFirstDerivationTableRow(idx);
     }
 
     /**
@@ -872,6 +882,13 @@ class UIController {
                 this.stopFollowStepperPlay();
                 this.followStepperIndex = 0;
                 this.renderFollowStepperStep(0);
+            });
+        }
+
+        const btnScrollFollow = document.getElementById('btn-scroll-to-current-follow-step');
+        if (btnScrollFollow) {
+            btnScrollFollow.addEventListener('click', () => {
+                this.highlightFollowDerivationTableRow(this.followStepperIndex);
             });
         }
     }
@@ -936,7 +953,7 @@ class UIController {
                     </div>
                     <div class="set-symbols-chips">
                         ${syms.map(s => {
-                            const isNewlyAdded = isTarget && step.newSymbols && step.newSymbols.includes(s);
+                            const isNewlyAdded = isTarget && ((step.added && step.added.includes(s)) || (step.newSymbols && step.newSymbols.includes(s)));
                             return `<span class="badge ${s === '$' ? 'badge-dollar' : 'badge-term'} ${isNewlyAdded ? 'badge-newly-added' : ''}">${this.escapeHtml(s)}</span>`;
                         }).join('') || '<span class="text-muted">∅</span>'}
                     </div>
@@ -944,6 +961,9 @@ class UIController {
                 grid.appendChild(card);
             }
         }
+
+        // Highlight active step in FOLLOW derivation table
+        this.highlightFollowDerivationTableRow(idx);
     }
 
     /**
@@ -990,6 +1010,16 @@ class UIController {
             restartBtn.addEventListener('click', () => {
                 if (this.animator) {
                     this.animator.restart();
+                }
+            });
+        }
+
+        const btnJumpTrace = document.getElementById('btn-jump-to-trace');
+        if (btnJumpTrace) {
+            btnJumpTrace.addEventListener('click', () => {
+                const card = document.getElementById('section-stack-trace-card');
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         }
@@ -1160,19 +1190,21 @@ class UIController {
         this.updateDashboardMetrics();
         this.addGrammarToHistory(grammarText, isLL1);
 
-        // 6. Reset Steppers
+        // 6. Render Analysis, Sets, Tables, and Iterations
+        this.renderAnalysisSection();
+        this.renderFirstSets();
+        this.renderFirstDerivationTable();
+        this.renderFollowSets();
+        this.renderFollowDerivationTable();
+        this.renderParsingTable();
+        this.renderTestCasesList();
+        this.renderIterationsTables();
+
+        // 7. Reset Steppers
         this.firstStepperIndex = 0;
         this.followStepperIndex = 0;
         this.renderFirstStepperStep(0);
         this.renderFollowStepperStep(0);
-
-        // 7. Render Analysis, Sets, Table, and Iterations
-        this.renderAnalysisSection();
-        this.renderFirstSets();
-        this.renderFollowSets();
-        this.renderParsingTable();
-        this.renderTestCasesList();
-        this.renderIterationsTables();
 
         // 8. Execute initial parse for default input
         const inputStr = defaultInput || document.getElementById('parser-input-string')?.value || 'id + id * id';
@@ -1193,7 +1225,9 @@ class UIController {
         this.renderGrammarOverview();
         this.renderAnalysisSection();
         this.renderFirstSets();
+        this.renderFirstDerivationTable();
         this.renderFollowSets();
+        this.renderFollowDerivationTable();
         this.renderParsingTable();
         this.renderIterationsTables();
 
@@ -1391,6 +1425,195 @@ class UIController {
                     </div>
                 `;
                 container.appendChild(card);
+            }
+        }
+    }
+
+    /**
+     * Renders Live Step-by-Step FIRST Derivation Table in Section 5
+     */
+    renderFirstDerivationTable() {
+        const tbody = document.getElementById('first-derivation-tbody');
+        if (!tbody || !this.firstCalc || !this.firstCalc.stepByStepLog) return;
+
+        tbody.innerHTML = '';
+        const steps = this.firstCalc.stepByStepLog;
+        if (steps.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-muted" style="text-align:center; padding: 18px;">No derivation steps recorded.</td></tr>';
+            return;
+        }
+
+        steps.forEach((step, idx) => {
+            const tr = document.createElement('tr');
+            tr.id = `first-trace-row-${idx}`;
+            tr.setAttribute('data-step-index', idx);
+            tr.className = `trace-row ${idx === 0 ? 'active-row' : ''}`;
+
+            const isFirst = (idx === 0);
+            const addedSymbols = (step.added && step.added.length > 0) ? step.added : (step.newSymbols || []);
+            const addedChips = addedSymbols.length > 0
+                ? addedSymbols.map(s => `<span class="badge ${s === 'ε' ? 'badge-eps' : 'badge-newly-added'}">${this.escapeHtml(s)}</span>`).join(' ')
+                : '<span class="text-muted">None (no change)</span>';
+
+            const nt = step.nonTerminal || '—';
+            const setVals = (step.snapshot && step.snapshot[nt]) ? step.snapshot[nt] : [];
+            const setDisplay = setVals.length > 0
+                ? setVals.map(s => {
+                    const isNew = addedSymbols.includes(s);
+                    return `<span class="badge ${s === 'ε' ? 'badge-eps' : (isNew ? 'badge-newly-added' : 'badge-term')}">${this.escapeHtml(s)}</span>`;
+                }).join(' ')
+                : '<span class="text-muted">∅</span>';
+
+            tr.innerHTML = `
+                <td class="td-step-num" style="text-align: center;">
+                    ${isFirst ? '<span class="active-step-badge"><span class="pulse-dot"></span>▶ CURRENT</span>' : `<span class="step-num-badge">Step ${idx + 1}</span>`}
+                </td>
+                <td><span class="stepper-iteration-badge" style="font-size: 11px;">Iter ${step.iteration || 1}</span></td>
+                <td><strong style="color: var(--accent-amber); font-family: var(--font-mono);">FIRST(${this.escapeHtml(nt)})</strong></td>
+                <td><code style="color: var(--accent-blue); font-weight: 600;">${this.escapeHtml(step.rule || '—')}</code></td>
+                <td><span class="examined-symbol-tag" style="padding: 2px 8px; font-size: 12px;">${this.escapeHtml(step.symbol || step.symbolExamined || '—')}</span></td>
+                <td>${addedChips}</td>
+                <td><code>{ </code>${setDisplay}<code> }</code></td>
+                <td class="td-trace-note" title="${this.escapeHtml(step.reason || '')}">${this.escapeHtml(step.reason || 'Derivation step')}</td>
+            `;
+
+            tr.addEventListener('click', () => {
+                this.stopFirstStepperPlay();
+                this.firstStepperIndex = idx;
+                this.renderFirstStepperStep(idx);
+            });
+
+            tbody.appendChild(tr);
+        });
+
+        this.highlightFirstDerivationTableRow(0);
+    }
+
+    /**
+     * Highlights the active row in FIRST Derivation Table and auto-scrolls to keep it centered.
+     */
+    highlightFirstDerivationTableRow(idx) {
+        const chip = document.getElementById('first-trace-chip-text');
+        const total = this.firstCalc && this.firstCalc.stepByStepLog ? this.firstCalc.stepByStepLog.length : 1;
+        const currentStep = this.firstCalc && this.firstCalc.stepByStepLog ? this.firstCalc.stepByStepLog[idx] : null;
+        if (chip) {
+            chip.textContent = `Step ${idx + 1} of ${total}${currentStep ? ' • Iteration ' + (currentStep.iteration || 1) : ''}`;
+        }
+
+        document.querySelectorAll('#first-derivation-tbody .trace-row').forEach((r, i) => {
+            if (i === idx) {
+                r.classList.add('active-row');
+                const numCell = r.querySelector('.td-step-num');
+                if (numCell) numCell.innerHTML = '<span class="active-step-badge"><span class="pulse-dot"></span>▶ CURRENT</span>';
+            } else {
+                r.classList.remove('active-row');
+                const numCell = r.querySelector('.td-step-num');
+                if (numCell) numCell.innerHTML = `<span class="step-num-badge">Step ${i + 1}</span>`;
+            }
+        });
+
+        const container = document.getElementById('first-trace-table-container');
+        if (container && container.offsetParent !== null) {
+            const activeRow = document.getElementById(`first-trace-row-${idx}`);
+            if (activeRow) {
+                const rowTop = activeRow.offsetTop;
+                const containerHeight = container.clientHeight;
+                const targetScroll = Math.max(0, rowTop - (containerHeight / 2) + (activeRow.clientHeight / 2));
+                container.scrollTo({ top: targetScroll, behavior: 'smooth' });
+            }
+        }
+    }
+
+    /**
+     * Renders Live Step-by-Step FOLLOW Derivation Table in Section 6
+     */
+    renderFollowDerivationTable() {
+        const tbody = document.getElementById('follow-derivation-tbody');
+        if (!tbody || !this.followCalc || !this.followCalc.stepByStepLog) return;
+
+        tbody.innerHTML = '';
+        const steps = this.followCalc.stepByStepLog;
+        if (steps.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-muted" style="text-align:center; padding: 18px;">No derivation steps recorded.</td></tr>';
+            return;
+        }
+
+        steps.forEach((step, idx) => {
+            const tr = document.createElement('tr');
+            tr.id = `follow-trace-row-${idx}`;
+            tr.setAttribute('data-step-index', idx);
+            tr.className = `trace-row ${idx === 0 ? 'active-row' : ''}`;
+
+            const isFirst = (idx === 0);
+            const addedSymbols = (step.added && step.added.length > 0) ? step.added : (step.newSymbols || []);
+            const addedChips = addedSymbols.length > 0
+                ? addedSymbols.map(s => `<span class="badge ${s === '$' ? 'badge-dollar' : 'badge-newly-added'}">${this.escapeHtml(s)}</span>`).join(' ')
+                : '<span class="text-muted">None (no change)</span>';
+
+            const nt = step.nonTerminal || '—';
+            const setVals = (step.snapshot && step.snapshot[nt]) ? step.snapshot[nt] : [];
+            const setDisplay = setVals.length > 0
+                ? setVals.map(s => {
+                    const isNew = addedSymbols.includes(s);
+                    return `<span class="badge ${s === '$' ? 'badge-dollar' : (isNew ? 'badge-newly-added' : 'badge-term')}">${this.escapeHtml(s)}</span>`;
+                }).join(' ')
+                : '<span class="text-muted">∅</span>';
+
+            tr.innerHTML = `
+                <td class="td-step-num" style="text-align: center;">
+                    ${isFirst ? '<span class="active-step-badge"><span class="pulse-dot"></span>▶ CURRENT</span>' : `<span class="step-num-badge">Step ${idx + 1}</span>`}
+                </td>
+                <td><span class="stepper-iteration-badge" style="font-size: 11px;">Iter ${step.iteration || 1}</span></td>
+                <td><strong style="color: var(--accent-amber); font-family: var(--font-mono);">FOLLOW(${this.escapeHtml(nt)})</strong></td>
+                <td><code style="color: var(--accent-green); font-weight: 600;">${this.escapeHtml(step.rule || '—')}</code></td>
+                <td>${addedChips}</td>
+                <td><code>{ </code>${setDisplay}<code> }</code></td>
+                <td class="td-trace-note" title="${this.escapeHtml(step.reason || '')}">${this.escapeHtml(step.reason || 'Derivation step')}</td>
+            `;
+
+            tr.addEventListener('click', () => {
+                this.stopFollowStepperPlay();
+                this.followStepperIndex = idx;
+                this.renderFollowStepperStep(idx);
+            });
+
+            tbody.appendChild(tr);
+        });
+
+        this.highlightFollowDerivationTableRow(0);
+    }
+
+    /**
+     * Highlights the active row in FOLLOW Derivation Table and auto-scrolls to keep it centered.
+     */
+    highlightFollowDerivationTableRow(idx) {
+        const chip = document.getElementById('follow-trace-chip-text');
+        const total = this.followCalc && this.followCalc.stepByStepLog ? this.followCalc.stepByStepLog.length : 1;
+        const currentStep = this.followCalc && this.followCalc.stepByStepLog ? this.followCalc.stepByStepLog[idx] : null;
+        if (chip) {
+            chip.textContent = `Step ${idx + 1} of ${total}${currentStep ? ' • Iteration ' + (currentStep.iteration || 1) : ''}`;
+        }
+
+        document.querySelectorAll('#follow-derivation-tbody .trace-row').forEach((r, i) => {
+            if (i === idx) {
+                r.classList.add('active-row');
+                const numCell = r.querySelector('.td-step-num');
+                if (numCell) numCell.innerHTML = '<span class="active-step-badge"><span class="pulse-dot"></span>▶ CURRENT</span>';
+            } else {
+                r.classList.remove('active-row');
+                const numCell = r.querySelector('.td-step-num');
+                if (numCell) numCell.innerHTML = `<span class="step-num-badge">Step ${i + 1}</span>`;
+            }
+        });
+
+        const container = document.getElementById('follow-trace-table-container');
+        if (container && container.offsetParent !== null) {
+            const activeRow = document.getElementById(`follow-trace-row-${idx}`);
+            if (activeRow) {
+                const rowTop = activeRow.offsetTop;
+                const containerHeight = container.clientHeight;
+                const targetScroll = Math.max(0, rowTop - (containerHeight / 2) + (activeRow.clientHeight / 2));
+                container.scrollTo({ top: targetScroll, behavior: 'smooth' });
             }
         }
     }

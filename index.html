@@ -9,10 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/theme.css?v=2.3">
-    <link rel="stylesheet" href="css/layout.css?v=2.3">
-    <link rel="stylesheet" href="css/components.css?v=2.3">
-    <link rel="stylesheet" href="css/animations.css?v=2.3">
+    <link rel="stylesheet" href="css/theme.css?v=2.4">
+    <link rel="stylesheet" href="css/layout.css?v=2.4">
+    <link rel="stylesheet" href="css/components.css?v=2.4">
+    <link rel="stylesheet" href="css/animations.css?v=2.4">
 </head>
 <body>
     <div class="app-container">
@@ -510,6 +510,48 @@ F -> ( E ) | id</textarea>
                         </div>
                     </div>
 
+                    <!-- Live Step-by-Step FIRST Derivation Table -->
+                    <div class="card live-trace-card" id="first-derivation-table-card" style="margin-bottom: 24px;">
+                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                                    📋 Live Step-by-Step FIRST Derivation Table
+                                </span>
+                                <span id="first-trace-chip" class="active-step-chip" title="Active Step">
+                                    <span class="pulse-dot"></span>
+                                    <span id="first-trace-chip-text">Step 1 of 8</span>
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-first-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
+                                    🎯 Focus Step
+                                </button>
+                            </div>
+                        </div>
+                        <p class="card-description" style="margin-bottom: 14px;">
+                            This table dynamically tracks every micro-step of the FIRST set algorithm. The active step lights up with 
+                            <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong> and auto-scrolls to remain centered. 
+                            <strong>Click any row</strong> to instantly jump the stepper forward or backward!
+                        </p>
+                        <div class="table-scroll-wrapper" id="first-trace-table-container" style="max-height: 340px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <table class="trace-table" id="first-derivation-trace-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 130px; text-align: center;">Step / Status</th>
+                                        <th style="width: 100px;">Iteration</th>
+                                        <th style="width: 120px;">Target Set</th>
+                                        <th style="width: 160px;">Production Rule</th>
+                                        <th style="width: 110px;">Symbol</th>
+                                        <th style="width: 140px;">Added to Set</th>
+                                        <th style="width: 200px;">Current FIRST(Target)</th>
+                                        <th>Pedagogical Rule &amp; Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="first-derivation-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="card" style="margin-bottom: 24px;">
                         <div class="card-title">🎯 Dynamically Updated FIRST Sets</div>
                         <div class="grid-3" id="first-sets-grid"></div>
@@ -574,6 +616,47 @@ F -> ( E ) | id</textarea>
                         </div>
                         <div id="follow-stepper-explanation" style="font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); background: var(--bg-input); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
                             Use the stepper controls above to follow the algorithm step-by-step.
+                        </div>
+                    </div>
+
+                    <!-- Live Step-by-Step FOLLOW Derivation Table -->
+                    <div class="card live-trace-card" id="follow-derivation-table-card" style="margin-bottom: 24px;">
+                        <div class="card-title-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span class="card-title" style="margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                                    📋 Live Step-by-Step FOLLOW Derivation Table
+                                </span>
+                                <span id="follow-trace-chip" class="active-step-chip" title="Active Step">
+                                    <span class="pulse-dot"></span>
+                                    <span id="follow-trace-chip-text">Step 1 of 12</span>
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary btn-sm" id="btn-scroll-to-current-follow-step" title="Center table on the active step" style="padding: 4px 12px; font-size: 12px;">
+                                    🎯 Focus Step
+                                </button>
+                            </div>
+                        </div>
+                        <p class="card-description" style="margin-bottom: 14px;">
+                            This table dynamically tracks every micro-step of the FOLLOW set algorithm. The active step lights up with 
+                            <strong style="color: var(--accent-blue);">▶ CURRENT STEP</strong> and auto-scrolls to remain centered. 
+                            <strong>Click any row</strong> to instantly jump the stepper forward or backward!
+                        </p>
+                        <div class="table-scroll-wrapper" id="follow-trace-table-container" style="max-height: 340px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <table class="trace-table" id="follow-derivation-trace-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 130px; text-align: center;">Step / Status</th>
+                                        <th style="width: 100px;">Iteration</th>
+                                        <th style="width: 120px;">Target Set</th>
+                                        <th style="width: 160px;">Production Rule</th>
+                                        <th style="width: 140px;">Added to Set</th>
+                                        <th style="width: 200px;">Current FOLLOW(Target)</th>
+                                        <th>Pedagogical Rule &amp; Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="follow-derivation-tbody"></tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -726,6 +809,9 @@ F -> ( E ) | id</textarea>
                             </button>
                             <button class="btn btn-secondary btn-icon" id="btn-step-restart" title="Restart Simulation">
                                 <span class="icon">⟲</span>
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btn-jump-to-trace" title="Jump down to Live Derivation Table" style="margin-left: 4px; font-size: 12px; padding: 5px 10px;">
+                                📋 Table
                             </button>
                         </div>
 
@@ -1213,20 +1299,20 @@ F -> ( E ) | id</textarea>
     </div>
 
     <!-- Application Scripts -->
-    <script src="js/grammar.js?v=2.3"></script>
-    <script src="js/first.js?v=2.3"></script>
-    <script src="js/follow.js?v=2.3"></script>
-    <script src="js/table.js?v=2.3"></script>
-    <script src="js/transform.js?v=2.3"></script>
-    <script src="js/lexer.js?v=2.3"></script>
-    <script src="js/quiz.js?v=2.3"></script>
-    <script src="js/export.js?v=2.3"></script>
-    <script src="js/parser.js?v=2.3"></script>
-    <script src="js/animator.js?v=2.3"></script>
-    <script src="js/tree.js?v=2.3"></script>
-    <script src="js/sample-grammars.js?v=2.3"></script>
-    <script src="js/ui.js?v=2.3"></script>
-    <script src="js/app.js?v=2.3"></script>
+    <script src="js/grammar.js?v=2.4"></script>
+    <script src="js/first.js?v=2.4"></script>
+    <script src="js/follow.js?v=2.4"></script>
+    <script src="js/table.js?v=2.4"></script>
+    <script src="js/transform.js?v=2.4"></script>
+    <script src="js/lexer.js?v=2.4"></script>
+    <script src="js/quiz.js?v=2.4"></script>
+    <script src="js/export.js?v=2.4"></script>
+    <script src="js/parser.js?v=2.4"></script>
+    <script src="js/animator.js?v=2.4"></script>
+    <script src="js/tree.js?v=2.4"></script>
+    <script src="js/sample-grammars.js?v=2.4"></script>
+    <script src="js/ui.js?v=2.4"></script>
+    <script src="js/app.js?v=2.4"></script>
 </body>
 </html>
 
